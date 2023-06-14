@@ -108,7 +108,7 @@ function Selector({ getDates }) {
         </Box>
       </div>
       <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-        <Button variant="text" onClick={() => getDates([day, month, year])}>Calculate</Button>
+        <Button variant="text" disabled={day && month && year ? false : true} onClick={() => getDates([day, month, year])}>Calculate</Button>
         </div>
     </div>
   );
