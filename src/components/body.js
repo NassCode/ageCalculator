@@ -16,7 +16,7 @@ function Body() {
 
   function getDatesFromSelector(dates) {
     console.log(dates);
-    let inputToDate = dayjs(`${dates[0]}/${dates[1]}/${dates[2]}`)
+    let inputToDate = dayjs(`${dates[0]}-${dates[1]}-${dates[2]}`)
     console.log(inputToDate.$d)
     diffInDay = currentDate.diff(inputToDate.$d, 'days')
     console.log(diffInDay)
