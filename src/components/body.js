@@ -1,5 +1,3 @@
-//import DatePicker from "./datePicker"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import Selector from "./selector";
 
@@ -7,58 +5,50 @@ const dayjs = require("dayjs");
 
 function Body() {
   const currentDate = dayjs(new Date());
-  const [age, setAge] = useState("");
-  const [newAge, setNewAge] = useState('')
-  const [datesFromSelector, setDatesFromSelector] = useState([]);
-  let selectedDate;
-  let diffInDaysMonthYear = 0;
+  const [newAge, setNewAge] = useState("");
+  const [outOfRange, setOutOfRange] = useState(false);
+  const [leapYear, setLeapYear] = useState(false);
+  const [birthday, setBirthday] = useState("");
+
   let diffInDay = 0;
+  const leapYears = [
+    1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964,
+    1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012,
+    2016, 2020, 2024,
+  ];
+
+  let months = [
+    ["January", 31],
+    ["February", 28],
+    ["March", 31],
+    ["April", 30],
+    ["May", 31],
+    ["June", 30],
+    ["July", 31],
+    ["August", 31],
+    ["September", 30],
+    ["October", 31],
+    ["November", 30],
+    ["December", 31],
+  ];
 
   function getDatesFromSelector(dates) {
-    console.log(dates);
-    let inputToDate = dayjs(`${dates[0]}-${dates[1]}-${dates[2]}`)
-    console.log(inputToDate.$d)
-    diffInDay = currentDate.diff(inputToDate.$d, 'days')
-    console.log(diffInDay)
 
-    function getAgeInMonthsAndDays(days) {
-      const years = Math.floor(days / 365.25);
-      const months = Math.floor((days % 365.25) / 30.44);
-      const remainingDays = Math.floor((days % 365.25) % 30.44);
-
-      if (years === 0 && months === 0) {
-        return `${remainingDays} ${remainingDays === 1 ? "day" : "days"}`;
-      } else if (years === 0 && remainingDays === 0) {
-        return `${months} ${months === 1 ? "month" : "months"}`;
-      } else if (months === 0 && remainingDays === 0) {
-        return `${years} ${years === 1 ? "year" : "years"}`;
-      } else if (years === 0) {
-        return `${months} ${
-          months === 1 ? "month" : "months"
-        } and ${remainingDays} ${remainingDays === 1 ? "day" : "days"}`;
-      } else if (months === 0) {
-        return `${years} ${
-          years === 1 ? "year" : "years"
-        } and ${remainingDays} ${remainingDays === 1 ? "day" : "days"}`;
-      } else if (remainingDays === 0) {
-        return `${years} ${years === 1 ? "year" : "years"} and ${months} ${
-          months === 1 ? "month" : "months"
-        }`;
-      } else {
-        return `${years} ${years === 1 ? "year" : "years"}, ${months} ${
-          months === 1 ? "month" : "months"
-        } and ${remainingDays} ${remainingDays === 1 ? "day" : "days"}`;
-      }
-    }
-
-    setNewAge(getAgeInMonthsAndDays(diffInDay + 1))
     
-  }
+    let datesArray = [...dates];
 
-  function calculateAge(e) {
-    selectedDate = dayjs(e);
+    isLeapYear(dates[2]);
 
-    diffInDaysMonthYear = currentDate.diff(selectedDate, "days");
+    isNotInMonthRange(dates[0], dates[1]);
+
+    getDayName(currentDate.$d.toString().slice(0, 3));
+
+    let inputToDate = dayjs(
+      `${datesArray[0]}-${datesArray[1]}-${datesArray[2]}`
+    );
+
+    diffInDay = currentDate.diff(inputToDate.$d, "days");
+
     function getAgeInMonthsAndDays(days) {
       const years = Math.floor(days / 365.25);
       const months = Math.floor((days % 365.25) / 30.44);
@@ -89,35 +79,117 @@ function Body() {
       }
     }
 
-    setAge(getAgeInMonthsAndDays(diffInDaysMonthYear));
+    function getDayName(dayAppriviation) {
+      let days = {
+        Mon: "Monday",
+        Tue: "Tuesday",
+        Wed: "Wednesday",
+        Thu: "Thursday",
+        Fri: "Friday",
+        Sat: "Saturday",
+        Sun: "Sunday",
+      };
+      let abbr = dayAppriviation;
+      setBirthday(days[abbr]);
+    }
+
+    function isLeapYear(year) {
+      if (leapYears.includes(year)) {
+        months[1][1] = 29;
+        setLeapYear(true);
+      } else {
+        months[1][1] = 28;
+        setLeapYear(false);
+      }
+    }
+
+    function isNotInMonthRange(inputDay, inputMonth) {
+      const monthIndex = months.findIndex((month) => month[0] === inputMonth);
+      const daysInMonth = months[monthIndex][1];
+      if (inputDay > daysInMonth) {
+        datesArray[0] = daysInMonth;
+        setOutOfRange(true);
+      } else {
+        setOutOfRange(false);
+      }
+    }
+
+    setNewAge(getAgeInMonthsAndDays(diffInDay + 1));
   }
 
-
+  function resetFields() {
+    setNewAge("");
+    setOutOfRange(false);
+    setLeapYear(false);
+    setBirthday("");
+  }
 
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      {/* <div>
-        <DatePicker
-          maxDate={dayjs(new Date()).subtract(1, "day")}
-          onAccept={(e) => calculateAge(e.$d)}
-        />
-      </div> */}
       <div>
-        <Selector getDates={getDatesFromSelector}/>
+        <Selector getDates={getDatesFromSelector} reset={resetFields} status={newAge ? true : false}/>
       </div>
+      <div className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "bold",
+            fontSize: "16px",
+            margin: "40px 0px 12px",
+          }}
+        >
+          {outOfRange && (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <span>Selected month shouldn't be that long 🤓</span>
+              </div>
+              <div>
+                <span>We brought it down for you 😇</span>
+              </div>
+            </div>
+          )}
+        </div>
+        <div
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "bolder",
+            fontSize: "18px",
+            margin: "8px 12px",
+          }}
 
-      <div
-        style={{
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          fontSize: "16px",
-          margin: "40px 12px",
-        }}
-      >
-        {age && <span>Age: {age}</span>}
-        {newAge && <span>Age: {newAge}</span>}
+          className={newAge ? "text" : ""}
+        >
+          {newAge && <span>Age: {newAge}</span>}
+        </div>
+        <div
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "bold",
+            fontSize: "16px",
+            margin: "8px 12px",
+          }}
+        >
+          {leapYear && <span>It looks like it was a leap year 🤔</span>}
+        </div>
+
+        <div
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "bold",
+            fontSize: "16px",
+            margin: "8px 12px",
+          }}
+        >
+          {birthday && <span>You were born on a {birthday}</span>}
+        </div>
       </div>
     </div>
   );

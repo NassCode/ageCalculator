@@ -5,11 +5,9 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 
-
-
-function Selector({ getDates }) {
+function Selector({ getDates, reset, status }) {
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
@@ -41,16 +39,9 @@ function Selector({ getDates }) {
     "December",
   ];
 
-  // array of leap years between 1920 and 2023
-  const leapYears = [
-    1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964,
-    1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012,
-    2016, 2020, 2024,
-  ];
-
   return (
-    <div style={{display: 'flex', flexDirection: 'column'}}>
-      <div style={{ display: "flex", flexDirection: "row", gap: '20px' }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <Box sx={{ minWidth: 80 }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Day</InputLabel>
@@ -63,7 +54,11 @@ function Selector({ getDates }) {
               onChange={handleDayChange}
             >
               {Array.from(Array(31).keys()).map((i) => {
-                return <MenuItem key={i} value={i + 1}>{i + 1}</MenuItem>;
+                return (
+                  <MenuItem key={i} value={i + 1}>
+                    {i + 1}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>
@@ -101,15 +96,34 @@ function Selector({ getDates }) {
               onChange={handleYearChange}
             >
               {Array.from(Array(104).keys()).map((i) => {
-                return <MenuItem key={i} value={2023 - i}>{2023 - i}</MenuItem>;
+                return (
+                  <MenuItem key={i} value={2023 - i}>
+                    {2023 - i}
+                  </MenuItem>
+                );
               })}
             </Select>
           </FormControl>
         </Box>
       </div>
-      <div style={{display: 'flex', justifyContent: 'center', marginTop: '20px'}}>
-        <Button variant="text" disabled={day && month && year ? false : true} onClick={() => getDates([day, month, year])}>Calculate</Button>
-        </div>
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      >
+        {status && (
+          <Button variant="text" onClick={reset}>
+            Calculate new date
+          </Button>
+        )}
+        {!status && (
+          <Button
+            disabled={day && month && year ? false : true}
+            variant="text"
+            onClick={() => getDates([day, month, year])}
+          >
+            Calculate
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
