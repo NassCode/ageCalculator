@@ -4,3 +4,5 @@ Live link 👇
 https://main.dh5h12ewbue95.amplifyapp.com/
 
 It will tell the dates taking in regard singles and plurals and will refrain from printing a zero.
+The app considers leap years and adjust Februray accordingly.
+
