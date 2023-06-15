@@ -12,6 +12,8 @@ function Selector({ getDates, reset, status }) {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
 
+  const currentYear = new Date().getFullYear();
+  
   const handleDayChange = (event) => {
     setDay(event.target.value);
   };
@@ -97,8 +99,8 @@ function Selector({ getDates, reset, status }) {
             >
               {Array.from(Array(104).keys()).map((i) => {
                 return (
-                  <MenuItem key={i} value={2023 - i}>
-                    {2023 - i}
+                  <MenuItem key={i} value={currentYear - i}>
+                    {currentYear - i}
                   </MenuItem>
                 );
               })}

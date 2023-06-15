@@ -11,11 +11,6 @@ function Body() {
   const [birthday, setBirthday] = useState("");
 
   let diffInDay = 0;
-  const leapYears = [
-    1920, 1924, 1928, 1932, 1936, 1940, 1944, 1948, 1952, 1956, 1960, 1964,
-    1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012,
-    2016, 2020, 2024,
-  ];
 
   let months = [
     ["January", 31],
@@ -33,8 +28,6 @@ function Body() {
   ];
 
   function getDatesFromSelector(dates) {
-
-    
     let datesArray = [...dates];
 
     isLeapYear(dates[2]);
@@ -94,7 +87,7 @@ function Body() {
     }
 
     function isLeapYear(year) {
-      if (leapYears.includes(year)) {
+      if (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
         months[1][1] = 29;
         setLeapYear(true);
       } else {
@@ -129,9 +122,20 @@ function Body() {
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <div>
-        <Selector getDates={getDatesFromSelector} reset={resetFields} status={newAge ? true : false}/>
+        <Selector
+          getDates={getDatesFromSelector}
+          reset={resetFields}
+          status={newAge ? true : false}
+        />
       </div>
-      <div className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div
+        className="container"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div
           style={{
             fontFamily: "monospace",
@@ -164,7 +168,6 @@ function Body() {
             fontSize: "18px",
             margin: "8px 12px",
           }}
-
           className={newAge ? "text" : ""}
         >
           {newAge && <span>Age: {newAge}</span>}
