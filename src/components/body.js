@@ -100,7 +100,7 @@ function Body() {
       }
     }
 
-    setNewAge(getAgeInMonthsAndDays(diffInDay));
+    setNewAge(getAgeInMonthsAndDays(diffInDay + 1));
   }
 
   return (
