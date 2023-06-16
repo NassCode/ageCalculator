@@ -6,9 +6,9 @@ const dayjs = require("dayjs");
 function Body() {
   const currentDate = dayjs(new Date());
   const [newAge, setNewAge] = useState("");
-  const [outOfRange, setOutOfRange] = useState(false);
   const [leapYear, setLeapYear] = useState(false);
   const [birthday, setBirthday] = useState("");
+  const [isDateInFuture, setIsDateInFuture] = useState(false);
 
   let diffInDay = 0;
 
@@ -32,8 +32,6 @@ function Body() {
 
     isLeapYear(dates[2]);
 
-    isNotInMonthRange(dates[0], dates[1]);
-
     getDayName(currentDate.$d.toString().slice(0, 3));
 
     let inputToDate = dayjs(
@@ -41,6 +39,12 @@ function Body() {
     );
 
     diffInDay = currentDate.diff(inputToDate.$d, "days");
+
+    if (diffInDay < 0) {
+      setIsDateInFuture(true);
+    } else {
+      setIsDateInFuture(false);
+    }
 
     function getAgeInMonthsAndDays(days) {
       const years = Math.floor(days / 365.25);
@@ -96,25 +100,7 @@ function Body() {
       }
     }
 
-    function isNotInMonthRange(inputDay, inputMonth) {
-      const monthIndex = months.findIndex((month) => month[0] === inputMonth);
-      const daysInMonth = months[monthIndex][1];
-      if (inputDay > daysInMonth) {
-        datesArray[0] = daysInMonth;
-        setOutOfRange(true);
-      } else {
-        setOutOfRange(false);
-      }
-    }
-
-    setNewAge(getAgeInMonthsAndDays(diffInDay + 1));
-  }
-
-  function resetFields() {
-    setNewAge("");
-    setOutOfRange(false);
-    setLeapYear(false);
-    setBirthday("");
+    setNewAge(getAgeInMonthsAndDays(diffInDay));
   }
 
   return (
@@ -122,11 +108,7 @@ function Body() {
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <div>
-        <Selector
-          getDates={getDatesFromSelector}
-          reset={resetFields}
-          status={newAge ? true : false}
-        />
+        <Selector getDates={getDatesFromSelector} currentDate={currentDate} />
       </div>
       <div
         className="container"
@@ -144,7 +126,7 @@ function Body() {
             margin: "40px 0px 12px",
           }}
         >
-          {outOfRange && (
+          {isDateInFuture && (
             <div
               style={{
                 display: "flex",
@@ -153,10 +135,7 @@ function Body() {
               }}
             >
               <div>
-                <span>Selected month shouldn't be that long 🤓</span>
-              </div>
-              <div>
-                <span>We brought it down for you 😇</span>
+                <span>You can't be born in the future 🤓</span>
               </div>
             </div>
           )}
@@ -170,7 +149,7 @@ function Body() {
           }}
           className={newAge ? "text" : ""}
         >
-          {newAge && <span>Age: {newAge}</span>}
+          {!isDateInFuture && newAge && <span>Age: {newAge}</span>}
         </div>
         <div
           style={{
@@ -180,7 +159,9 @@ function Body() {
             margin: "8px 12px",
           }}
         >
-          {leapYear && <span>It looks like it was a leap year 🤔</span>}
+          {!isDateInFuture && leapYear && (
+            <span>It looks like it was a leap year 🤔</span>
+          )}
         </div>
 
         <div
@@ -191,7 +172,9 @@ function Body() {
             margin: "8px 12px",
           }}
         >
-          {birthday && <span>You were born on a {birthday}</span>}
+          {!isDateInFuture && birthday && (
+            <span>You were born on a {birthday}</span>
+          )}
         </div>
       </div>
     </div>
