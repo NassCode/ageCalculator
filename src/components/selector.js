@@ -45,6 +45,9 @@ function Selector({ getDates, currentDate }) {
 
     setDays(months[monthIndex][1]);
     setMonth(event.target.value);
+    if (day > months[monthIndex][1]) {
+      setDay(months[monthIndex][1])
+    }
   };
 
   const handleYearChange = (event) => {
