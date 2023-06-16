@@ -55,6 +55,9 @@ function Selector({ getDates, currentDate }) {
     let monthIndex = months.findIndex((m) => m[0] === month);
     setDays(months[monthIndex][1]);
     setYear(event.target.value);
+    if (day > months[monthIndex][1]) {
+      setDay(months[monthIndex][1])
+    }
   };
 
   function isLeapYear(year) {
